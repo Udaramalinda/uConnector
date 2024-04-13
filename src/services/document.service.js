@@ -14,9 +14,14 @@ function handleInstagramWebhookDocument(body){
     return null;
 }
 
+function handleTelegramWebhookDocument(body){
+    return null;
+}
+
 module.exports = {
     handleWhatsappWebhookDocument: handleWhatsappWebhookDocument,
     handleViberWebhookDocument: handleViberWebhookDocument,
     handleMessengerWebhookDocument: handleMessengerWebhookDocument,
-    handleInstagramWebhookDocument: handleInstagramWebhookDocument
+    handleInstagramWebhookDocument: handleInstagramWebhookDocument,
+    handleTelegramWebhookDocument: handleTelegramWebhookDocument
 }
