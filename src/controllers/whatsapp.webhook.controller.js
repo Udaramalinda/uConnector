@@ -65,7 +65,7 @@ exports.acceptMessage = (req, res) => {
 async function handleReadStatus(messageId) {
   await axios
     .post(
-      `${WHATSAPP_SEND_MESSAGE_BASE_URL}/${WHATSAPP_API_VERSION}/${WHATSAPP_PHONE_NUMBER_ID}/messages`,
+      WHATSAPP_SEND_MESSAGE_BASE_URL + '/' + WHATSAPP_API_VERSION + '/' + WHATSAPP_PHONE_NUMBER_ID + '/messages',
       {
         messaging_product: 'whatsapp',
         status: 'read',
@@ -73,9 +73,9 @@ async function handleReadStatus(messageId) {
       },
       {
         headers: {
-          Authorization: `Bearer ${WHATSAPP_VERIFY_TOKEN}`,
+          Authorization: 'Bearer ' + WHATSAPP_VERIFY_TOKEN,
           'Content-Type': 'application/json',
-        },
+        }
       }
     )
     .then((response) => {

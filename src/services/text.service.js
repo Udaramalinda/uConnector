@@ -1,5 +1,7 @@
 // const db = require('../configs/db');
+const BASE_URL = process.env.BASE_URL;
 const Chatroom = require('../models/chatroom.model');
+const axios = require('axios');
 
 const WHATSAPP_NAME = process.env.WHATSAPP_NAME;
 
@@ -15,7 +17,9 @@ function handleWhatsappWebhookText(body) {
         channel: WHATSAPP_NAME
     }
 
-    console.log(chatroomObj);
+    let chatroom = null;
+    let created = false;
+
     try{
         const [chatroom, created] = Chatroom.findOrCreate({
             where: {
@@ -23,12 +27,16 @@ function handleWhatsappWebhookText(body) {
             },
             defaults: chatroomObj
         });
+
+        this.chatroom = chatroom;
+        this.created = created;
+
     } catch (error) {
         console.log(error);
     }
-
-    console.log(chatroom);
-    console.log(created);
+    if (created) {
+        sendNotificationOfChatroomCreated(chatroom);
+    }
 }
 
 function handleViberWebhookText(body) {
@@ -46,6 +54,28 @@ function handleInstagramWebhookText(body) {
 function handleTelegramWebhookText(body) {
     return null;
 }
+
+async function sendNotificationOfChatroomCreated(chatroom) {
+    await axios 
+        .post(
+            BASE_URL + '/chatroom/created/', 
+        {
+            chatroom: chatroom
+        },
+        {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((response) => {
+            console.log('Notification sent', response);
+        })
+        .catch((error) => {
+            console.log('Error sending notification', error);
+        });
+}
+
+async function 
 
 module.exports = {
     handleWhatsappWebhookText: handleWhatsappWebhookText,
