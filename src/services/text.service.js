@@ -75,7 +75,7 @@ async function sendNotificationOfChatroomCreated(chatroom) {
         });
 }
 
-async function 
+// async function 
 
 module.exports = {
     handleWhatsappWebhookText: handleWhatsappWebhookText,
@@ -83,4 +83,4 @@ module.exports = {
     handleMessengerWebhookText: handleMessengerWebhookText,
     handleInstagramWebhookText: handleInstagramWebhookText,
     handleTelegramWebhookText: handleTelegramWebhookText
-}
+};

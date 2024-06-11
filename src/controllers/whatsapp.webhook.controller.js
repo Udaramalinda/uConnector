@@ -46,18 +46,24 @@ exports.acceptMessage = (req, res) => {
 
     if (body.entry[0].changes[0].value.messages[0].text) {
       handleWhatsappWebhookText(body);
-    } else if (body.entry[0].changes[0].value.messages[0].image) {
+    } 
+    else if (body.entry[0].changes[0].value.messages[0].image) {
       handleWhatsappWebhookImage(body);
-    } else if (body.entry[0].changes[0].value.messages[0].video) {
+    } 
+    else if (body.entry[0].changes[0].value.messages[0].video) {
       handleWhatsappWebhookVideo(body);
-    } else if (body.entry[0].changes[0].value.messages[0].document) {
+    } 
+    else if (body.entry[0].changes[0].value.messages[0].document) {
       handleWhatsappWebhookDocument(body);
-    } else if (body.entry[0].changes[0].value.messages[0].sticker) {
+    } 
+    else if (body.entry[0].changes[0].value.messages[0].sticker) {
       handleWhatsappWebhookSticker(body);
-    } else {
+    } 
+    else {
       console.log('Unsupported message type');
     }
-  } else {
+  } 
+  else {
     res.sendStatus(404);
   }
 };
