@@ -17,7 +17,7 @@ const {
 
 const axios = require('axios');
 
-exports.verifyWebhook = (req, res) => {
+exports.verifyWebhook = async (req, res) => {
   let token = req.query['hub.verify_token'];
   let challenge = req.query['hub.challenge'];
   let mode = req.query['hub.mode'];
@@ -34,7 +34,7 @@ exports.verifyWebhook = (req, res) => {
   }
 };
 
-exports.acceptMessage = (req, res) => {
+exports.acceptMessage = async (req, res) => {
   let body = req.body;
 
   if (
