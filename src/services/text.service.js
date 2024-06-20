@@ -1,42 +1,24 @@
-// const db = require('../configs/db');
-const BASE_URL = process.env.BASE_URL;
-const Chatroom = require('../models/chatroom.model');
-const axios = require('axios');
+// import message save service
+const { saveMessageInFirebase } = require('./webhook-message-save-service/whatsapp.webhook.message.save.service');
 
-const WHATSAPP_NAME = process.env.WHATSAPP_NAME;
 
-function handleWhatsappWebhookText(body) {
-    // console.log(body.entry[0].changes[0].value.messages[0].text.body);
+// import text message generators for each chat platform
+const { generateWhatsappTextMessageObject } = require('./object-generator-service/whatsapp.object.generator');
 
-    const chatroomObj = {
-        identifier: WHATSAPP_NAME + body.entry[0].changes[0].value.messages[0].from,
-        senderNumber: body.entry[0].changes[0].value.messages[0].from,
-        sender: body.entry[0].changes[0].value.contacts[0].profile.name,
-        timestampApplicatpion: body.entry[0].changes[0].value.messages[0].timestamp,
-        timestamp: new Date(body.entry[0].changes[0].value.messages[0].timestamp * 1000),
-        channel: WHATSAPP_NAME
+
+// import sending method for each chat platform
+const { sendMessageToWhatsapp } = require('./platform-send-services/whatsapp.send.service');
+
+async function handleWhatsappWebhookText(body, chatDetails) {
+    
+    messageBody = {
+        sendByMe: false,
+        messageType: 'TEXT',
+        message: body.entry[0].changes[0].value.messages[0].text.body,
+        createdAt: Date.now()
     }
-
-    let chatroom = null;
-    let created = false;
-
-    try{
-        const [chatroom, created] = Chatroom.findOrCreate({
-            where: {
-                identifier: chatroomObj.identifier
-            },
-            defaults: chatroomObj
-        });
-
-        this.chatroom = chatroom;
-        this.created = created;
-
-    } catch (error) {
-        console.log(error);
-    }
-    if (created) {
-        sendNotificationOfChatroomCreated(chatroom);
-    }
+    const response = await saveMessageInFirebase(messageBody, chatDetails);
+    console.log(response);
 }
 
 function handleViberWebhookText(body) {
@@ -55,32 +37,30 @@ function handleTelegramWebhookText(body) {
     return null;
 }
 
-async function sendNotificationOfChatroomCreated(chatroom) {
-    await axios 
-        .post(
-            BASE_URL + '/chatroom/created/', 
-        {
-            chatroom: chatroom
-        },
-        {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then((response) => {
-            console.log('Notification sent', response);
-        })
-        .catch((error) => {
-            console.log('Error sending notification', error);
-        });
-}
+// Sending text to relavant chat platform
+async function sendTextToChatPlatform(messageContent) {
+    
+    if (messageContent.chatDetails.receiverChannel === 'WHATSAPP') {
+        const whatsappTextMessageObject = await generateWhatsappTextMessageObject(messageContent);
+        return sendMessageToWhatsapp(whatsappTextMessageObject);
+    } else if (messageContent.chatDetails.receiverChannel === 'MESSENGER') {
+        // return sendTextToMessenger(messageContent);
+    } else if (messageContent.chatDetails.receiverChannel === 'INSTAGRAM') {
+        // return sendTextToInstagram(messageContent);
+    } else {
+        return {
+            status: 400,
+            message: 'Invalid chat platform'
+        }
+    }
 
-// async function 
+} 
 
 module.exports = {
     handleWhatsappWebhookText: handleWhatsappWebhookText,
     handleViberWebhookText: handleViberWebhookText,
     handleMessengerWebhookText: handleMessengerWebhookText,
     handleInstagramWebhookText: handleInstagramWebhookText,
-    handleTelegramWebhookText: handleTelegramWebhookText
+    handleTelegramWebhookText: handleTelegramWebhookText,
+    sendTextToChatPlatform: sendTextToChatPlatform
 };

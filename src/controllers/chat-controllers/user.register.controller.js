@@ -1,4 +1,4 @@
-const { registerChatUser} = require('../../services/chat-services/user.register.service');
+const { registerChatUser } = require('../../services/chat-services/user.register.service');
 
 exports.registerUser = async (req, res) => {
     const status = await registerChatUser(req.body);

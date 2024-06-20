@@ -11,9 +11,12 @@ const { handleWhatsappWebhookVideo } = require('../services/video.service');
 const {
   handleWhatsappWebhookDocument,
 } = require('../services/document.service');
+const { handleWhatsappWebhookSticker } = require('../services/sticker.service');
+
+// import check user chat exists service
 const {
-  handleWhatsappWebhookSticker,
-} = require('../services/sticker.service');
+  checkWhatsappUserChatExists,
+} = require('../services/webhook-message-save-service/whatsapp.webhook.message.save.service');
 
 const axios = require('axios');
 
@@ -44,34 +47,36 @@ exports.acceptMessage = async (req, res) => {
     res.status(200).send('EVENT_RECEIVED');
     handleReadStatus(body.entry[0].changes[0].value.messages[0].id);
 
-    if (body.entry[0].changes[0].value.messages[0].text) {
-      handleWhatsappWebhookText(body);
-    } 
-    else if (body.entry[0].changes[0].value.messages[0].image) {
-      handleWhatsappWebhookImage(body);
-    } 
-    else if (body.entry[0].changes[0].value.messages[0].video) {
-      handleWhatsappWebhookVideo(body);
-    } 
-    else if (body.entry[0].changes[0].value.messages[0].document) {
-      handleWhatsappWebhookDocument(body);
-    } 
-    else if (body.entry[0].changes[0].value.messages[0].sticker) {
-      handleWhatsappWebhookSticker(body);
-    } 
-    else {
-      console.log('Unsupported message type');
+    // cretae chat if not exists
+    const chatDetails = await checkWhatsappUserChatExists(body);
+
+    if (chatDetails.chatId && chatDetails.userId) {
+      if (body.entry[0].changes[0].value.messages[0].text) {
+        handleWhatsappWebhookText(body, chatDetails);
+      } else if (body.entry[0].changes[0].value.messages[0].image) {
+        handleWhatsappWebhookImage(body, chatDetails);
+      } else if (body.entry[0].changes[0].value.messages[0].video) {
+        handleWhatsappWebhookVideo(body, chatDetails);
+      } else if (body.entry[0].changes[0].value.messages[0].document) {
+        handleWhatsappWebhookDocument(body, chatDetails);
+      } else if (body.entry[0].changes[0].value.messages[0].sticker) {
+        handleWhatsappWebhookSticker(body, chatDetails);
+      } else {
+        console.log('Unsupported message type');
+      }
     }
-  } 
-  else {
-    res.sendStatus(404);
   }
 };
 
 async function handleReadStatus(messageId) {
   await axios
     .post(
-      WHATSAPP_SEND_MESSAGE_BASE_URL + '/' + WHATSAPP_API_VERSION + '/' + WHATSAPP_PHONE_NUMBER_ID + '/messages',
+      WHATSAPP_SEND_MESSAGE_BASE_URL +
+        '/' +
+        WHATSAPP_API_VERSION +
+        '/' +
+        WHATSAPP_PHONE_NUMBER_ID +
+        '/messages',
       {
         messaging_product: 'whatsapp',
         status: 'read',
@@ -81,13 +86,13 @@ async function handleReadStatus(messageId) {
         headers: {
           Authorization: 'Bearer ' + WHATSAPP_VERIFY_TOKEN,
           'Content-Type': 'application/json',
-        }
+        },
       }
     )
     .then((response) => {
-      console.log('Read status sent successfully');
+      console.log('sent read status to whatsapp');
     })
     .catch((error) => {
-      console.log('Error sending read status');
+      console.log(error.response.data);
     });
 }
