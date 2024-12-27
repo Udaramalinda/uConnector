@@ -1,5 +1,7 @@
 # µConnect Backend
 
+[Frontend repository for µConnector](https://github.com/Udaramalinda/uConnector-ChatUI)
+
 Welcome to the backend repository for the µConnect project. This repository encapsulates the technical foundation of the µConnect platform, enabling streamlined integration across multiple messaging platforms such as WhatsApp, Instagram, Viber, and Telegram. Designed with modularity and scalability at its core, the backend ensures seamless communication through robust APIs, secure authentication, and efficient data handling.
 
 The backend system leverages advanced web technologies to abstract the complexities of individual messaging APIs, providing developers with a unified interface to interact with diverse platforms. It incorporates a universal messaging API mapper, real-time data synchronization with Firebase, and custom API wrappers to deliver a cohesive messaging experience. By prioritizing security, scalability, and reliability, µConnect empowers businesses to integrate and manage messaging platforms effortlessly, fostering innovation and reducing development overhead.
