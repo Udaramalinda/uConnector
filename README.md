@@ -42,11 +42,11 @@ The µConnect backend is designed for modularity, scalability, and security. Key
 - **Sender Module**: Dispatches messages to target platforms.
 - **Receiver Module**: Processes incoming messages from the client application.
 
-![System Architecture](https://via.placeholder.com/800x400?text=System+Architecture)
+![System Architecture](https://github.com/Udaramalinda/uConnector/blob/main/uconnector-architecture.png)
 
 ### ER Diagram
 
-![ER Diagram](https://via.placeholder.com/800x400?text=ER+Diagram)
+![ER Diagram](https://github.com/Udaramalinda/uConnector/blob/main/uconnector-ER.png)
 
 ---
 
